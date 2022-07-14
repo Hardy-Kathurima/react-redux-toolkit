@@ -1,26 +1,33 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import {  Link,useNavigate } from "react-router-dom";
-import { addUser } from "../features/users/UserSlice";
-import { v4 as uuidv4} from 'uuid';
+import { useDispatch,useSelector } from "react-redux";
+import {  Link,useNavigate,useParams } from "react-router-dom";
+import { editUser } from "../features/users/UserSlice";
 
-const AddUser = () => {
+
+const EditUser = (route) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { id } = useParams();
+    const users = useSelector( store => store.users);
+    const currentUser = users.filter(user => user.id === id);
+    const {name,email} = currentUser[0];
+
 
     const [values , setValues] = useState({
-        name:'',
-        email:''
+        name,
+        email
     })
 
-    const handleSubmit = (e)=>{
+    const handleEdit = (e)=>{
         e.preventDefault();
-        dispatch(addUser({
-            id:uuidv4(),
+        dispatch(editUser({
+            id:id,
             name:values.name,
             email:values.email
         }));
+
         navigate('/');
+    
     }
     return ( 
         <>
@@ -28,7 +35,7 @@ const AddUser = () => {
         <div className="row justify-content-center my-3">
             <div className="col-md-6 my-5 align-self-center">
             <div className="card card-body">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleEdit}>
                    <div className="mb-3">
                    <label htmlFor="name" className="form-label">Name</label>
                     <input type="text" name="name"   className="form-control"
@@ -62,4 +69,4 @@ const AddUser = () => {
      );
 }
  
-export default AddUser;
+export default EditUser;
